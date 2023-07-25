@@ -1,8 +1,16 @@
 from django.shortcuts import render
 
 
+rooms = [
+    {'id': 1, 'name': 'Lets learn Python'},
+    {'id': 2, 'name': 'Lets learn Django'},
+    {'id': 3, 'name': 'Lets learn React'},
+]
+
+
 def home(request):
-    return render(request, 'home.html')
+    context = {'rooms': rooms}
+    return render(request, 'home.html', context)
 
 
 def room(request):
