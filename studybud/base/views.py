@@ -92,9 +92,16 @@ def room(request, pk):
 
 
 def user_profile(request, pk):
+    query_value = request.GET.get("q")
+    if query_value is None:
+        query_value = ""
     user = User.objects.get(id=pk)
-    rooms = user.room_set.all()
-    room_messages = user.message_set.all()
+    rooms = user.room_set.filter(
+        Q(topic__name__icontains=query_value)
+        | Q(name__icontains=query_value)
+        | Q(description__icontains=query_value)
+    )
+    room_messages = user.message_set.filter(Q(room__topic__name__icontains=query_value))
     topics = Topic.objects.all()
     context = {
         "user": user,
