@@ -122,3 +122,15 @@ def delete_room(request, pk):
         return redirect("home")
     context = {"obj": room}
     return render(request, "base/delete.html", context)
+
+
+@login_required(login_url="login")
+def delete_message(request, pk):
+    message = Message.objects.get(id=pk)
+    if request.user != message.user:
+        return HttpResponse("You are not allowed here")
+    if request.method == "POST":
+        message.delete()
+        return redirect("home")
+    context = {"obj": message}
+    return render(request, "base/delete.html", context)
