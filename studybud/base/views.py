@@ -3,6 +3,7 @@ from django.contrib import messages
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.forms import UserCreationForm
 from django.http import HttpResponse
 from django.db.models import Q
 from .models import Room, Topic
@@ -14,7 +15,7 @@ def login_page(request):
     if request.user.is_authenticated:
         return redirect("home")
     if request.method == "POST":
-        username = request.POST.get("username")
+        username = request.POST.get("username").lower()
         password = request.POST.get("password")
         try:
             user = User.objects.get(username=username)
@@ -36,8 +37,18 @@ def logout_user(request):
 
 
 def register_page(request):
-    page = "register"
-    context = {"page": page}
+    register_form = UserCreationForm()
+    if request.method == "POST":
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save(commit=False)
+            user.username = user.username.lower()
+            user.save()
+            login(request, user)
+            return redirect("home")
+        else:
+            messages.error(request, "An error has occured during registration")
+    context = {"register_form": register_form}
     return render(request, "base/login_register.html", context)
 
 
