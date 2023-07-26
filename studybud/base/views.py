@@ -9,12 +9,13 @@ def home(request):
     if query_value is None:
         query_value = ""
     rooms = Room.objects.filter(
-        Q(topic__name__icontains=query_value) |
-        Q(name__icontains=query_value) |
-        Q(description__icontains=query_value)
+        Q(topic__name__icontains=query_value)
+        | Q(name__icontains=query_value)
+        | Q(description__icontains=query_value)
     )
     topics = Topic.objects.all()
-    context = {"rooms": rooms, "topics": topics}
+    room_count = rooms.count()
+    context = {"rooms": rooms, "topics": topics, "room_count": room_count}
     return render(request, "base/home.html", context)
 
 
